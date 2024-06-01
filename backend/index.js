@@ -28,8 +28,12 @@ app.post("/vote", async (req, res) => {
 
 // GET API to fetch all census data
 app.get("/data", async (req, res) => {
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = 3;
+  const offset = (page - 1) * limit;
   try {
-    const result = await pool.query("SELECT * FROM people");
+    const result = await pool.query(`SELECT * FROM people LIMIT $1 OFFSET $2` , [limit, offset]);
     res.status(200).json({ data: result.rows });
   } catch (err) {
     res.status(500).json({ error: err.message });
